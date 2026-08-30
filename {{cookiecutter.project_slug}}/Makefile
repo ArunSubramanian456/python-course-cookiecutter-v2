@@ -20,9 +20,6 @@ lint:
 lint-ci:
 	bash run.sh lint:ci
 
-generate-project:
-	bash run.sh generate-project
-
 # publish-prod:
 # 	bash run.sh publish:prod
 

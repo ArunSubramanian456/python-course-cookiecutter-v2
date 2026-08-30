@@ -1,0 +1,7 @@
+{
+    "project_name": "MLOps Python",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "project_description": "Production MLOps pipeline template with automated CI/CD.",
+    "author_name": "Arun Subramanian",
+    "author_github_handle": "ArunSubramanian456"
+}
