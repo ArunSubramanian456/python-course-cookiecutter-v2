@@ -6,20 +6,35 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # install core and development Python dependencies into the currently activated venv
 function install {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        export UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
+    fi
     uv pip install --group dev
     uv pip install -e .
 }
 
 # run linting, formatting, and other static code quality tools during local development
 function lint {
-    pre-commit run --all-files
+    export PRE_COMMIT_HOME=~/.cache/pre-commit
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        export UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
+        pre-commit run --all-files
+    else
+        uv run pre-commit run --all-files
+    fi
 }
 
 # same as `lint` but with any special considerations for CI
 function lint:ci {
     # We skip no-commit-to-branch since that blocks commits to `main`.
     # All merged PRs are commits to `main` so this must be disabled.
-    SKIP=no-commit-to-branch pre-commit run --all-files
+    export PRE_COMMIT_HOME=~/.cache/pre-commit
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        export UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
+        SKIP=no-commit-to-branch pre-commit run --all-files
+    else
+        SKIP=no-commit-to-branch uv run pre-commit run --all-files
+    fi
 }
 
 # # execute tests that are not marked as `slow`
@@ -66,11 +81,17 @@ function test:wheel-locally {
 
 # serve the html test coverage report on localhost:8000
 function serve-coverage-report {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        export UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
+    fi
     uv run python -m http.server --directory "$THIS_DIR/test-reports/htmlcov/" 8000
 }
 
 # build a wheel and sdist from the Python source code
 function build {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        export UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
+    fi
     uv  run python -m build --sdist --wheel "$THIS_DIR/"
 }
 

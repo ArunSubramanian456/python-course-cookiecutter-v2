@@ -50,6 +50,7 @@ where = ["src"] # Ensures setuptools finds code inside src/ directory
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-ra -q --cov={{ cookiecutter.project_slug }} --cov-report=term-missing --cov-fail-under=70"
 markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 
@@ -87,8 +88,12 @@ unfixable = ["B"]
 # Set the maximum allowed cyclomatic complexity threshold
 max-complexity = 20
 
+[tool.ruff.lint.isort]
+known-first-party = ["{{ cookiecutter.project_slug }}"]
+lines-between-types = 1
+
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
 "path/to/file.py" = ["E402"]
 "tests/*" = ["S101"]
@@ -101,13 +106,11 @@ package = false
 
 [tool.ty]
 # Cleanest way to handle missing external library types
-rules.unresolved-import = "ignore"
-
-[tool.ty.environment]
+rules = { unresolved-import = "ignore" }
 # Ensures ty always scans your environment files correctly
-root = ["."]
+environment = { root = ["."] }
 
 [tool.setuptools.package-data]
-# Use tool.hatch.build.include to include additional files in the build, if we change the build backend to hatchling. 
+# Use tool.hatch.build.include to include additional files in the build, if we change the build backend to hatchling.
 # See https://hatch.pypa.io/latest/build/#including-additional-files-in-the-build
 mypkg = ["*.txt", "*.csv", "*.md", "*.json", "*.yaml", "*.yml"]

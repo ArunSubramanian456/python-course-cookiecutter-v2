@@ -1,6 +1,7 @@
 """Utility functions for working with cities and states."""
 
 import json
+
 from pathlib import Path
 from typing import List
 

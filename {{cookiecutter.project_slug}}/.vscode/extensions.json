@@ -2,12 +2,14 @@
     "recommendations": [
         // official python extensiosn
         "ms-python.python",
-        "ms-python.black-formatter",
-        "ms-python.pylint",
-        "ms-python.flake8",
+        "charliermarsh.ruff",
+        "astral-sh.ty",
+        // "ms-python.black-formatter",
+        // "ms-python.pylint",
+        // "ms-python.flake8",
         "ms-python.vscode-pylance",
-        "ms-python.isort",
-        "ms-python.mypy-type-checker",
+        // "ms-python.isort",
+        // "ms-python.mypy-type-checker",
         // official extension pack for jupyter notebooks
         "ms-toolsai.jupyter",
         // official extension pack for SSH tunneling, WSL, dev containers, etc..
