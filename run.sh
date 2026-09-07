@@ -108,6 +108,7 @@ function push_initial_readme_to_repo {
     fi
 
     # clone the repo and cd into it
+    gh repo view "$GITHUB_USERNAME/$GITHUB_REPO_NAME" > /dev/null
     gh repo clone "$GITHUB_USERNAME/$GITHUB_REPO_NAME"
     cd "$GITHUB_REPO_NAME"
 
@@ -143,6 +144,7 @@ function open_pr_with_generated_project {
     fi
 
     # clone the repo
+    gh repo view "$GITHUB_USERNAME/$GITHUB_REPO_NAME" > /dev/null
     gh repo clone "$GITHUB_USERNAME/$GITHUB_REPO_NAME"
 
     # delete the contents of cloned repo preserving only the .git directory
