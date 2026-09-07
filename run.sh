@@ -74,6 +74,17 @@ function try-load-dotenv {
     set +o allexport
 }
 
+function configure_git_credentials {
+    if [[ -z "${GH_TOKEN:-}" ]]; then
+        echo "GH_TOKEN is required for authenticated Git operations" >&2
+        return 1
+    fi
+}
+
+function configure_git_remote {
+    git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_USERNAME}/${GITHUB_REPO_NAME}.git"
+}
+
 function create_repo_if_not_exists {
     local IS_REPO_PUBLIC=${IS_REPO_PUBLIC:-false}
 
@@ -101,6 +112,8 @@ function create_repo_if_not_exists {
 
 function push_initial_readme_to_repo {
 
+    configure_git_credentials
+
     # delete the repo clone if it already exists
     if [[ -d "$GITHUB_REPO_NAME" ]]; then
         echo "Deleting existing repo clone $GITHUB_REPO_NAME"
@@ -111,6 +124,7 @@ function push_initial_readme_to_repo {
     gh repo view "$GITHUB_USERNAME/$GITHUB_REPO_NAME" > /dev/null
     gh repo clone "$GITHUB_USERNAME/$GITHUB_REPO_NAME"
     cd "$GITHUB_REPO_NAME"
+    configure_git_remote
 
     # create a README.md file with the repo name
     echo "# $GITHUB_REPO_NAME" > README.md
@@ -129,6 +143,7 @@ function open_pr_with_generated_project {
 
     # install dependencies if not already installed
     install
+    configure_git_credentials
 
     # remove the repo clone and outdir if it already exists
     OUTDIR="template"
@@ -146,6 +161,9 @@ function open_pr_with_generated_project {
     # clone the repo
     gh repo view "$GITHUB_USERNAME/$GITHUB_REPO_NAME" > /dev/null
     gh repo clone "$GITHUB_USERNAME/$GITHUB_REPO_NAME"
+    cd "$GITHUB_REPO_NAME"
+    configure_git_remote
+    cd ..
 
     # delete the contents of cloned repo preserving only the .git directory
     mv "$GITHUB_REPO_NAME/.git" "./$GITHUB_REPO_NAME.git-backup"
@@ -268,6 +286,18 @@ function configure_repo {
 }
 EOF
 
+}
+
+function create-sample-repo {
+    git add .github/ run.sh \
+    && git commit -m "fix: debugging the create-or-update-repo.yaml workflow" \
+    && git push origin main || true
+
+    gh workflow run .github/workflows/create-or-update-repo.yaml \
+        -f repo_name=generated-repo-$REPO_NUMBER \
+        -f package_import_name=generated_repo_$REPO_NUMBER \
+        -f is_public_repo=false \
+        --ref main
 }
 
 # print all functions in this file
