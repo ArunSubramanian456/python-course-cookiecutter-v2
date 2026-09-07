@@ -220,7 +220,7 @@ EOF
 
 }
 
-function configure-repo {
+function configure_repo {
 
     # Push AWS Secrets to the GitHub Actions secrets store
     if [[ -n "$AWS_ACCESS_KEY_ID" && -n "$AWS_SECRET_ACCESS_KEY" && -n "$AWS_DEFAULT_REGION" ]]; then

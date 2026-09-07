@@ -40,7 +40,7 @@ jobs:
 
             - name: Create repo if not exists
               run: |
-                  bash -x run.sh create-repo-if-not-exists
+                  bash -x run.sh create_repo_if_not_exists
               env:
                   GITHUB_REPO_NAME: ${{ github.event.inputs.repo_name }}
                   GITHUB_USERNAME: ${{ github.repository_owner }}
@@ -60,7 +60,7 @@ jobs:
                   git config --global user.email "test@test.com"
                   git config --global user.name "Eric Riddoch"
             - run: |
-                  bash -x run.sh configure-repo
+                  bash -x run.sh configure_repo
               env:
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -82,7 +82,7 @@ jobs:
                   git config --global user.email "test@test.com"
                   git config --global user.name "Eric Riddoch"
             - run: |
-                  bash -x run.sh open-pr-with-generated-project
+                  bash -x run.sh open_pr_with_generated_project
               env:
                   GITHUB_REPO_NAME: ${{ github.event.inputs.repo_name }}
                   GITHUB_REPO_DESCRIPTION: ${{ github.event.inputs.repo_description }}
