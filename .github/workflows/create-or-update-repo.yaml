@@ -38,10 +38,9 @@ jobs:
                   git config --global user.email "7979807+ArunSubramanian456@users.noreply.github.com"
                   git config --global user.name "Arun Subramanian"
 
-            - name: Authenticate with GitHub CLI
+            - name: Verify GitHub CLI authentication
               run: |
-                  printf '%s\n' "$GH_TOKEN" | gh auth login --with-token
-                  gh auth status
+                  gh api user --jq '.login'
 
             - name: Create repo if not exists
               run: |
@@ -65,10 +64,9 @@ jobs:
                   git config --global user.email "test@test.com"
                   git config --global user.name "Eric Riddoch"
 
-            - name: Authenticate with GitHub CLI
+            - name: Verify GitHub CLI authentication
               run: |
-                  printf '%s\n' "$GH_TOKEN" | gh auth login --with-token
-                  gh auth status
+                  gh api user --jq '.login'
 
             - run: |
                   bash -x run.sh configure_repo
@@ -93,10 +91,9 @@ jobs:
                   git config --global user.email "test@test.com"
                   git config --global user.name "Eric Riddoch"
 
-            - name: Authenticate with GitHub CLI
+            - name: Verify GitHub CLI authentication
               run: |
-                  printf '%s\n' "$GH_TOKEN" | gh auth login --with-token
-                  gh auth status
+                  gh api user --jq '.login'
 
             - name: Verify generated repository access
               run: |
