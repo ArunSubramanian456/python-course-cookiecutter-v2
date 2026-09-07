@@ -197,7 +197,7 @@ EOF
     cookiecutter ./ --output-dir "$OUTDIR" \
     --no-input \
     --config-file "$CONFIG_FILE_PATH"
-    # rm "$CONFIG_FILE_PATH"
+    rm "$CONFIG_FILE_PATH"
 
     # check if the generated project directory exists
     if [[ ! -d "$OUTDIR/$PROJECT_SLUG" ]]; then

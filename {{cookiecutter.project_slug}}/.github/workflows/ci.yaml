@@ -8,6 +8,8 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
 jobs:
   lint-format-and-static-code-checks:
     name: Lint, Format, and other static code quality checks
@@ -119,8 +121,6 @@ jobs:
       ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout code
