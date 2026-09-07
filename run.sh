@@ -91,7 +91,7 @@ function create_repo_if_not_exists {
 
     else
         echo "Creating private repo"
-        gh repo create "$GITHUB_USERNAME/$GITHUB_REPO_NAME" --private        
+        gh repo create "$GITHUB_USERNAME/$GITHUB_REPO_NAME" --private
 
     fi
 
@@ -104,9 +104,9 @@ function push_initial_readme_to_repo {
     # delete the repo clone if it already exists
     if [[ -d "$GITHUB_REPO_NAME" ]]; then
         echo "Deleting existing repo clone $GITHUB_REPO_NAME"
-        rm -rf "$GITHUB_REPO_NAME"  
+        rm -rf "$GITHUB_REPO_NAME"
     fi
-    
+
     # clone the repo and cd into it
     gh repo clone "$GITHUB_USERNAME/$GITHUB_REPO_NAME"
     cd "$GITHUB_REPO_NAME"
@@ -120,7 +120,7 @@ function push_initial_readme_to_repo {
     git commit -m "feat: created repository"
     git branch -M main
     git push -u origin main
-    
+
 }
 
 
@@ -134,12 +134,12 @@ function open_pr_with_generated_project {
 
     if [[ -d "$GITHUB_REPO_NAME" ]]; then
         echo "Deleting existing repo clone $GITHUB_REPO_NAME"
-        rm -rf "$GITHUB_REPO_NAME"  
+        rm -rf "$GITHUB_REPO_NAME"
     fi
 
     if [[ -d "$OUTDIR" ]]; then
         echo "Deleting existing template directory $OUTDIR"
-        rm -rf "$OUTDIR"  
+        rm -rf "$OUTDIR"
     fi
 
     # clone the repo
@@ -184,7 +184,7 @@ EOF
         echo "Generated project directory $OUTDIR/$PROJECT_SLUG does not exist"
         exit 1
     fi
-    
+
     # create a new branch, add all files, run linting once, re-stage, commit, and push to the remote repo
     echo "Creating new branch, adding all files, running linting, re-staging, committing, and pushing to the remote repo"
     mv "$GITHUB_REPO_NAME/.git" "$OUTDIR/$PROJECT_SLUG/"
@@ -198,7 +198,7 @@ EOF
 
     # apply formatting and linting autofixes to the generated files
     lint:ci || true
-    
+
     # re-stage all files after linting autofixes
     git add .
 
@@ -237,7 +237,7 @@ function configure-repo {
     else
         echo "AWS Secrets are not set, skipping pushing to the GitHub Actions secrets store"
     fi
-    
+
 
 
     # protect main branch, enforcing passing build on feature branch before merge
