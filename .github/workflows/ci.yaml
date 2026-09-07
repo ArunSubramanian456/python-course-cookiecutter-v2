@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   lint-format-and-static-code-checks:
@@ -35,7 +36,7 @@ jobs:
       #   run: uv pip install --system pre-commit
 
       - name: Lint, Format, and other static code quality checks
-        run: /bin/bash -x run.sh lint-ci
+        run: /bin/bash -x run.sh lint:ci
 
   execute-tests:
     name: Execute tests
@@ -61,7 +62,7 @@ jobs:
           /bin/bash -x run.sh install
 
       - name: Run Unit Tests and report coverage
-        run: /bin/bash -x run.sh test-ci
+        run: /bin/bash -x run.sh run-tests
 
   check-version-tag:
     name: Tag release version
@@ -78,8 +79,8 @@ jobs:
         run: |
           git tag $(cat version.txt)
 
-  build-wheel:
-    name: Build wheel
+  push-tags:
+    name: Publish git tag
     needs:
       [lint-format-and-static-code-checks, execute-tests, check-version-tag]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -87,25 +88,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          fetch-depth: 0
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-        with:
-          version: "0.11.29"
-
-      - name: Build wheel locally and test it
-        run: /bin/bash -x run.sh test:wheel-locally
-
-      - name: Upload package artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: wheel-and-sdist
-          path: ./dist/*
+      - name: Push tags
+        run: |
+          git push origin --tags
 
   # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
   dump-contexts-to-log:

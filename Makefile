@@ -14,9 +14,6 @@ help:
 install:
 	bash run.sh install
 
-lint:
-	bash run.sh lint
-
 lint-ci:
 	bash run.sh lint:ci
 
@@ -35,17 +32,5 @@ generate-project:
 # release-test:
 # 	bash run.sh release:test
 
-serve-coverage-report:
-	bash run.sh serve-coverage-report
-
-test-ci:
-	bash run.sh test:ci
-
-# test-quick:
-# 	bash run.sh test:quick
-
 test:
 	bash run.sh run-tests
-
-test-wheel-locally:
-	bash run.sh test:wheel-locally

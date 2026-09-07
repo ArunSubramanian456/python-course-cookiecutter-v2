@@ -7,12 +7,30 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # install core and development Python dependencies into the currently activated venv
 function install {
     uv pip install --upgrade pip
-    uv pip install cookiecutter pytest 
+    uv pip install cookiecutter pytest pytest-xdist pre-commit
 }
 
+function lint:ci {
+    # We skip no-commit-to-branch since that blocks commits to `main`.
+    # All merged PRs are commits to `main` so this must be disabled.
+    export PRE_COMMIT_HOME=~/.cache/pre-commit
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        export UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
+        SKIP=no-commit-to-branch pre-commit run --all-files
+    else
+        SKIP=no-commit-to-branch uv run pre-commit run --all-files
+    fi
+}
+
+#  run tests
+function run-tests {
+    python -m pytest ${@:-"$THIS_DIR/tests/"}
+}
+
+# generate a new project from this cookiecutter template
 function generate-project {
     cookiecutter ./ \
-    --output-dir "$THIS_DIR/template" 
+    --output-dir "$THIS_DIR/template"
 
     cd "$THIS_DIR/template"
     cd $(ls)

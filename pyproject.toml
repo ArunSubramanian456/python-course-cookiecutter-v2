@@ -37,7 +37,7 @@ unfixable = ["B"]
 max-complexity = 20
 
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
 "path/to/file.py" = ["E402"]
 "tests/*" = ["S101"]
@@ -53,3 +53,7 @@ package = false
 rules = { unresolved-import = "ignore" }
 # Ensures ty always scans your environment files correctly
 environment = { root = ["."] }
+
+
+[tool.ty.src]
+exclude = ['\{\{cookiecutter\.project_slug\}\}/']

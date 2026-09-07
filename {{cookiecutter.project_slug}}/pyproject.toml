@@ -113,4 +113,11 @@ environment = { root = ["."] }
 [tool.setuptools.package-data]
 # Use tool.hatch.build.include to include additional files in the build, if we change the build backend to hatchling.
 # See https://hatch.pypa.io/latest/build/#including-additional-files-in-the-build
-mypkg = ["*.txt", "*.csv", "*.md", "*.json", "*.yaml", "*.yml"]
+"{{ cookiecutter.project_slug }}" = [
+    "*.txt",
+    "*.csv",
+    "*.md",
+    "*.json",
+    "*.yaml",
+    "*.yml",
+]
