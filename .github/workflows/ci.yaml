@@ -70,9 +70,8 @@ jobs:
         run: /bin/bash -x run.sh run-tests
 
   check-version-tag:
-    name: Tag release version
+    name: Validate Version & Check Tag Conflict
     needs: [lint-format-and-static-code-checks, execute-tests]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -80,9 +79,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Tag with the release version
+      - name: Check version.txt syntax and duplicate remote tags
         run: |
-          git tag $(cat version.txt)
+          VERSION=$(cat version.txt)
+          echo "Target version: $VERSION"
+
+          # Check if tag already exists on GitHub
+          IF_EXISTS=$(git ls-remote --tags origin "refs/tags/$VERSION")
+          if [[ -n "$IF_EXISTS" ]]; then
+            echo "Error: Tag '$VERSION' already exists on remote!"
+            exit 1
+          fi
 
   push-tags:
     name: Publish git tag
@@ -98,9 +105,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push tags
+      - name: Tag release
         run: |
-          git push origin --tags
+          VERSION=$(cat version.txt)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
 
   # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
   dump-contexts-to-log:

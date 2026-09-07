@@ -1,1 +1,1 @@
-"""example_pkg."""
+"""{{cookiecutter.project_slug}}."""

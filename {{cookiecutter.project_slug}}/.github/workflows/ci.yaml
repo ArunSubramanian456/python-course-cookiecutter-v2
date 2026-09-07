@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   lint-format-and-static-code-checks:
@@ -35,7 +36,7 @@ jobs:
       #   run: uv pip install --system pre-commit
 
       - name: Lint, Format, and other static code quality checks
-        run: /bin/bash -x run.sh lint-ci
+        run: /bin/bash -x run.sh lint:ci
 
   execute-tests:
     name: Execute tests
@@ -61,12 +62,11 @@ jobs:
           /bin/bash -x run.sh install
 
       - name: Run Unit Tests and report coverage
-        run: /bin/bash -x run.sh test-ci
+        run: /bin/bash -x run.sh test:ci
 
   check-version-tag:
-    name: Tag release version
+    name: Validate Version & Check Tag Conflict
     needs: [lint-format-and-static-code-checks, execute-tests]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -74,15 +74,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Tag with the release version
+      - name: Check version.txt syntax and duplicate remote tags
         run: |
-          git tag $(cat version.txt)
+          VERSION=$(cat version.txt)
+          echo "Target version: $VERSION"
+
+          # Check if tag already exists on GitHub
+          IF_EXISTS=$(git ls-remote --tags origin "refs/tags/$VERSION")
+          if [[ -n "$IF_EXISTS" ]]; then
+            echo "Error: Tag '$VERSION' already exists on remote!"
+            exit 1
+          fi
 
   build-wheel:
-    name: Build wheel
+    name: Test building wheel locally
     needs:
       [lint-format-and-static-code-checks, execute-tests, check-version-tag]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -101,11 +108,34 @@ jobs:
       - name: Build wheel locally and test it
         run: /bin/bash -x run.sh test:wheel-locally
 
-      - name: Upload package artifacts
-        uses: actions/upload-artifact@v7
+  release-on-main:
+    name: Tag Release
+    needs:
+      [
+        lint-format-and-static-code-checks,
+        execute-tests,
+        check-version-tag,
+        build-wheel,
+      ]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
         with:
-          name: wheel-and-sdist
-          path: ./dist/*
+          fetch-depth: 0
+
+      - name: Push tags
+        run: |
+          VERSION=$(cat version.txt)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
 
   # https://docs.github.com/en/actions/learn-github-actions/contexts#example-printing-context-information-to-the-log
   dump-contexts-to-log:
