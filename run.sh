@@ -6,6 +6,12 @@ THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # install core and development Python dependencies into the currently activated venv
 function install {
+    if [[ -z "${VIRTUAL_ENV:-}" ]]; then
+        if [[ ! -d .venv ]]; then
+            uv venv .venv
+        fi
+        source .venv/bin/activate
+    fi
     uv pip install --upgrade pip
     uv pip install cookiecutter pytest pytest-xdist pre-commit
 }
