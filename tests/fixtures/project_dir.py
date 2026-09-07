@@ -3,8 +3,8 @@
 import shutil
 import subprocess
 from pathlib import Path
-from uuid import uuid4
 from typing import Generator
+from uuid import uuid4
 
 import pytest
 
