@@ -8,7 +8,7 @@ on:
                 required: true
                 type: string
             is_public_repo:
-                description: If unchecked, repo is public.
+                description: If unchecked, repo is private.
                 required: true
                 default: true
                 type: boolean
